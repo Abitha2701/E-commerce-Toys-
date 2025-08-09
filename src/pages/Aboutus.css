@@ -1,0 +1,38 @@
+.about-container {
+  padding: 2rem;
+  width: 100%;
+  background-color: #fff0f5; /* Optional soft background */
+}
+
+.about-content {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  background-color: #fce4ec;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+
+.about-image {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  height: auto;
+  object-fit: cover;
+}
+
+.about-text {
+  flex: 2;
+  padding: 1.5rem;
+}
+
+.about-text h2 {
+  color: #c2185b;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  color: #333;
+}

@@ -1,0 +1,73 @@
+.doll-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  background-color: #fff0f5;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.doll-text {
+  flex: 1 1 300px;
+}
+
+.doll-text h3 {
+  color: #e91e63;
+  margin-bottom: 10px;
+}
+
+.doll-text p {
+  font-size: 17px;
+  color: #444;
+  line-height: 1.7;
+}
+
+.doll-image {
+  flex: 1 1 250px;
+  text-align: center;
+}
+
+.doll-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.cards{
+  display: flex;
+  flex-wrap: wrap ;
+ 
+ margin:2rem;
+ justify-content: space-between;
+margin-bottom: 2rem;
+}
+.card{
+ height: 32rem;
+ display: flex;
+ flex-direction: column;
+
+text-align: center;
+margin-bottom: 2rem;
+}
+.card img{
+  height:17rem;
+}
+.card .buy{
+  border: 1px solid #e91e63;
+  padding: 7px 14px;
+  text-decoration: none;
+  color: #e91e63;
+  border-radius: 10px;
+}
+.card .buy:hover{
+  background-color: #e91e63;
+  color: white;
+  font-weight: bold;
+}
+.card .money p,del{
+  color: red;
+}
+.remove-btn{
+  color: #e91e63;
+}

@@ -1,0 +1,71 @@
+/* Import a fun, kid-friendly font */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap');
+
+* {
+  font-family: 'Baloo 2', cursive;
+}
+
+/* Extras section styling */
+.extras {
+  margin-top: 5rem;
+}
+
+/* Align items in row */
+.extras .row {
+  align-items: center;
+  height: 70%;
+}
+
+/* Icons */
+.extras i {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 10px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+/* Fun icon hover */
+.extras i:hover {
+  transform: scale(1.1);
+}
+
+/* Vibrant icon colors */
+.fa-truck {
+  color: #00bcd4; /* Cyan */
+}
+
+.fa-phone {
+  color: #4caf50; /* Green */
+}
+
+.fa-boxes-stacked {
+  color: #ff9800; /* Orange */
+}
+
+.fa-check-circle {
+  color: #f44336; /* Red */
+}
+
+/* Description text under icons */
+.container-fluid small {
+  font-size: 18px;
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Links */
+.container-fluid a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.container-fluid a:hover {
+  text-decoration: underline;
+  color: #ff4081; /* Pink accent */
+}

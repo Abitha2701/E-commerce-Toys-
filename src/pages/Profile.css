@@ -1,0 +1,66 @@
+.Profile {
+  min-height: 100vh;
+  background-image: url("../images/bg.avif"); /* Absolute path */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.profile-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 2.5rem;
+  background-color: #fce4ec;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.profile-container h2 {
+  color: #bd2255;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.profile-details p {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0.6rem 0;
+  line-height: 1.5;
+}
+
+.logout-btn {
+  background-color: #c2185b;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  margin-top: 2rem;
+  font-size: 1rem;
+}
+
+.logout-btn:hover {
+  background-color: #ad1457;
+  transform: scale(1.05);
+}
+.back-home {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #c2185b;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.back-home:hover {
+  margin-left: 2rem;
+  text-decoration: underline;
+}

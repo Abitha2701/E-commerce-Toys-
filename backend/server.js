@@ -1,0 +1,134 @@
+const express = require("express");
+const cors = require("cors");
+const app = express();
+
+const port = 6005;
+const bcrypt = require("bcryptjs");
+
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send("Hi");
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
+
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
+const uri = "mongodb+srv://abitha27012005:Abitha27@cluster0.mklctlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+let userCollection;
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    const db=client.db("test");
+     userCollection=db.collection("menu");
+
+    app.post("/upload",async(req,res)=>{
+        try{
+            const {name,mail,number,password}=req.body;
+            console.log(name,mail,number,password,"inside upload")
+            if(!name || !mail || !number || !password){
+                return res.status(400).json({success:false,message:"all fields are required"});
+            }
+            const existingUser=await userCollection.findOne({mail});
+            if(existingUser){
+                return res.status(409).json({success:false,message:"User already exist"});
+        }
+        const hashedPassword=await bcrypt.hash(password,10);
+
+        const result=await userCollection.insertOne({
+            name,
+            mail,
+            number,
+            password:hashedPassword
+        });
+        res.status(201).json({success:true,message:"User registere" ,userId:result.insertedId});
+    }
+   catch(error){
+    console.log("Error in /upload:",error);
+    res.status(500).json({success:false,message:"Servor error"});
+   }
+    });
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
+  }
+}
+run().catch(console.dir);
+
+ app.post("/login", async (req, res) => {
+        try {
+             
+          const { mail, password } = req.body;
+          if (!mail || !password) {
+            return res.status(400).json({ success: false, message: "Email and password required" });
+          }
+
+          const user = await userCollection.findOne({ mail });
+          if (!user) {
+            return res.status(401).json({ success: false, message: "Invalid email or password" });
+          }
+
+          const isMatch = await bcrypt.compare(password, user.password);
+          if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Invalid email or password" });
+          }
+
+          res.status(200).json({ success: true, message: "Login successful", user: { name: user.name, mail: user.mail,_id:user._id } });
+
+        } catch (error) {
+          console.error("Error in /login:", error);
+          res.status(500).json({ success: false, message: "Server error" });
+        }
+      });
+app.put("/reset-password",async(req,res)=>{
+const {mail,newPassword}=req.body;
+
+if(!mail || !newPassword){
+  return res.status(400).json({message:"Email and new password required"});
+}
+  const hashedPassword=await bcrypt.hash(newPassword,10);
+
+  await userCollection.updateOne(
+    {mail},
+    {$set:{password: hashedPassword}}
+  );
+  res.json({message:"Password reset successful"});
+}
+)
+
+app.get("/profile/:mail", async (req, res) => {
+  const { mail } = req.params;
+console.log("Fetching profile for:", mail); 
+  try {
+    const user = await userCollection.findOne(
+      { mail },
+      { projection: { password: 0 } }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("Error in /user/:mail:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
