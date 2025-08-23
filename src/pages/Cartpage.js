@@ -21,23 +21,17 @@ const CartPage = () => {
     }
   };
 
-const calculateTotal = () => {
-  return cartitems.reduce((total, item) => {
-    // Fix 1: Ensure price is a number
-    const cleanedPriceString = item.price?.toString().replace(/[^\d.]/g, '');
-    const price = parseFloat(cleanedPriceString) || 0;
-
-    // Fix 2: Ensure quantity is a number
-    const quantity = parseInt(item.quantity) || 1;
-
-    return total + price * quantity;
-  }, 0);
-};
-
-
+  const calculateTotal = () => {
+    return cartitems.reduce((total, item) => {
+      const cleanedPriceString = item.price?.toString().replace(/[^\d.]/g, '');
+      const price = parseFloat(cleanedPriceString) || 0;
+      const quantity = parseInt(item.quantity) || 1;
+      return total + price * quantity;
+    }, 0);
+  };
 
   const handleCheckout = () => {
-    alert('Proceeding to checkout...'); 
+    alert('Proceeding to checkout...');
   };
 
   return (
@@ -66,10 +60,8 @@ const calculateTotal = () => {
             ))}
           </div>
 
-          <div className="cart-total"><h3>Total Price: ₹{calculateTotal().toFixed(2)}</h3>
-
-
-
+          <div className="cart-total">
+            <h3>Total Price: ₹{calculateTotal().toFixed(2)}</h3>
             <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
           </div>
         </>
