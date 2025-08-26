@@ -58,37 +58,29 @@ margin-bottom: 2rem;
 .card-body {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* keep content aligned to top */
   flex-grow: 1;
 }
 
-.card img {
-  height: 180px;
-  width: 100%;
-  object-fit: contain; /* Better for different toy shapes */
-  border-radius: 8px;
-  margin-bottom: 1rem;
+.card-title {
+  min-height: 2.5rem; /* ensures titles don't shift height */
 }
 
-
-.card .buy{
-  border: 1px solid #e91e63;
-  padding: 7px 14px;
-  text-decoration: none;
-  color: #e91e63;
-  border-radius: 10px;
+.card-text {
+  flex-grow: 1; /* takes up available space to push button down */
+  font-size: 14px;
+  color: #444;
 }
-.card .buy:hover{
-  background-color: #e91e63;
-  color: white;
+
+.money {
+  margin: 0.5rem 0;
+  font-size: 15px;
   font-weight: bold;
 }
-.card .money p,del{
-  color: red;
-}
+
 .add-btn, .remove-btn {
-  margin-top: auto;
-  padding: 0.5rem 1rem;
+  margin-top: auto; /* pushes button to bottom */
+  padding: 0.6rem 1rem;
   width: 100%;
   font-weight: bold;
   border-radius: 8px;
@@ -98,6 +90,7 @@ margin-bottom: 2rem;
   color: #e91e63;
   transition: all 0.3s ease-in-out;
 }
+
 
 .add-btn:hover {
   background-color: #e91e63;
