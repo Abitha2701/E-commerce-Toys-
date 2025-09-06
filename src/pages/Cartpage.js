@@ -2,10 +2,15 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteFromCart, updateQuantity } from '../redux/Cartslice';
 import './Cartpage.css';
+import { loadStripe } from "@stripe/stripe-js";
+
+
+const stripePromise = loadStripe("pk_test_51S0iteCkxII7b1vsU2H573EanlKNtjppUQIMnHOeMH5C4xhAokyWqJk10pkQmhaOl4hJPs30n3n7nOsOuweuIMPa00I05WqW2y"); 
 
 const CartPage = () => {
   const cartitems = useSelector((state) => state.cart.cartitems);
   const dispatch = useDispatch();
+  const stripePromise = loadStripe("pk_test_1234567890"); 
 
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
@@ -30,9 +35,44 @@ const CartPage = () => {
     }, 0);
   };
 
-  const handleCheckout = () => {
-    alert('Proceeding to checkout...');
-  };
+const handleCheckout = async () => {
+  try {
+    const response = await fetch("http://localhost:6005/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          {
+            priceId: "price_1S0iwgCkxII7b1vs7CDbp6aL", // use your Stripe Price ID
+            quantity: 1
+          }
+        ]
+      }),
+    });
+
+    const session = await response.json();
+
+    if (!session.id) {
+      throw new Error("No session ID returned from backend");
+    }
+
+    const stripe = await stripePromise;
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (error) {
+      console.error("Stripe redirect error:", error);
+      alert(error.message);
+    }
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert("Checkout failed");
+  }
+};
+
+
+
 
   return (
     <div className="cart-container">

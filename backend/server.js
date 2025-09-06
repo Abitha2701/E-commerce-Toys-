@@ -4,6 +4,9 @@ const app = express();
 
 const port = 6005;
 const bcrypt = require("bcryptjs");
+const Stripe = require("stripe");
+const stripe = new Stripe("sk_test_51S0iteCkxII7b1vsRONIfkZkxIFiPih5GV5V7R9zQd9rQ3jkwT3NkSpYmYF0p4PCEVmGblUxmUP8n6Z9AdUpVpkt00BAVi4e7F"); // 🔑 your secret key
+
 
 
 app.use(cors());
@@ -132,3 +135,28 @@ console.log("Fetching profile for:", mail);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+app.post("/create-checkout-session", async (req, res) => {
+  try {
+    const { items } = req.body;
+    console.log("Items from frontend:", items);
+
+    const lineItems = items.map(item => ({
+      price: item.priceId,   // ✅ use priceId directly
+      quantity: item.quantity,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: "payment", // ✅ only works if price is one-time
+      success_url: "http://localhost:5173/success",
+      cancel_url: "http://localhost:5173/cancel",
+    });
+
+    res.json({ id: session.id });
+  } catch (err) {
+    console.error("Stripe error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+

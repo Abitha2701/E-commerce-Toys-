@@ -29,7 +29,7 @@ import card23 from '../images/img14.webp'
 import card24 from '../images/img15.webp'
 import {useSelector,useDispatch} from 'react-redux'
 import { addTocart,deleteFromCart } from '../redux/Cartslice';
-
+import { Link } from "react-router-dom";
 
 
 const Softtoys = () => {
@@ -60,6 +60,7 @@ const addCart = (item) => {
     title: "Brown Bear",
     description: "Large soft brown teddy bear perfect for hugging and bedtime comfort.",
     initial_price: 900,
+    priceId: "price_12345abcXYZ", 
     price: 500,
   },
   {
@@ -291,32 +292,24 @@ const addCart = (item) => {
         </div>
       </div>
 
-      <div className="cards">
-     {
-      menu.map(
-        (
-          item
-        )=>(
-          <div className="card col-3" key={item.id} style={{ width: '18rem' }}>
-          <img src={item.imgage} className="card-img-top" alt="Teddy" />
-          <div className="card-body">
-            <h5 className="card-title">{item.title}</h5>
-            <p className="card-text">{item.description}</p>
-            <p className="money"><del>Rs.{item.initial_price}</del> Rs.{item.price}</p>
-            {
-            cartitems.find(reduxdata=>reduxdata.id===item.id)?(
-         
-                  <button className="remove-btn"  onClick={() => deleteCart(item)}>Remove from Cart</button>
-                ) : (
-                  <button className="add-btn" onClick={() => addCart(item)}>Add to Cart</button>
-                )}
-
-          </div>
+   <div className="cards">
+  {menu.map((item) => (
+    <div className="card col-3" key={item.id} style={{ width: "18rem" }}>
+      {/* Wrap image/title with Link */}
+      <Link to={`/product/${item.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+        <img src={item.imgage} className="card-img-top" alt={item.title} />
+        <div className="card-body">
+          <h5 className="card-title">{item.title}</h5>
+          <p className="card-text">{item.description.slice(0, 50)}...</p>
+          <p className="money">
+            <del>Rs.{item.initial_price}</del> Rs.{item.price}
+          </p>
         </div>
-        )
-      )
-     }
-      </div>
+      </Link>
+    </div>
+  ))}
+</div>
+
       <Footer/>
     </div>
   );

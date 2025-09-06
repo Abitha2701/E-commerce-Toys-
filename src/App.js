@@ -14,7 +14,7 @@ import ForgetPassword from './pages/ForgetPassword';
 import Profile from './pages/Profile';
 import Cartpage from './pages/Cartpage';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import  SearchResults  from './pages/SearchResults';
 
 
 
@@ -25,6 +25,7 @@ function App() {
     <BrowserRouter>
     
       <Routes>
+        <Route path="/search" element={<SearchResults />} />
 <Route path='' element={<Home/>}/>
 <Route path='/contact' element={<Contact/>}/>
 <Route path='/about' element={<Aboutus/>}/>
