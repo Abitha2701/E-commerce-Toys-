@@ -16,6 +16,7 @@ import Cartpage from './pages/Cartpage';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import  SearchResults  from './pages/SearchResults';
 import ProductDetails from "./pages/ProductDetails";
+import Checkout from './pages/Checkout';
 
 
 
@@ -38,6 +39,7 @@ function App() {
 <Route path='/profile' element={<Profile/>}/>
 <Route path='/cart' element={<Cartpage/>}/>
 <Route path="/product/:id" element={<ProductDetails />} />
+<Route path="/checkout" element={<Checkout />} />
 
       </Routes>
    
