@@ -1,84 +1,104 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { addTocart, deleteFromCart } from "../redux/Cartslice";
-import allProducts from "../data/allProducts"; // include your products here
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addTocart } from "../redux/Cartslice";
+import "./ProductDetails.css";
 
-const ProductDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+function ProductDetails() {
+  const location = useLocation();
+  const product = location.state;
   const dispatch = useDispatch();
-  const cartitems = useSelector((state) => state.cart.cartitems);
-  const [showDelivery, setShowDelivery] = useState(false);
+  const navigate = useNavigate();
 
-  // find product by id
-  const product = allProducts.find((p) => p.id === parseInt(id));
+  const [message, setMessage] = useState("");
 
-  if (!product) {
-    return <h3 className="text-center mt-5">Product not found</h3>;
-  }
+  // 🗓️ Function to calculate expected delivery date
+  const calculateExpectedDate = (delivery) => {
+    if (!delivery) return null;
 
-  const addCart = (item) => {
-    dispatch(addTocart({ ...item, quantity: 1 }));
+    // Extract number from delivery string (e.g., "5 days")
+    const days = parseInt(delivery.match(/\d+/)?.[0] || 0, 10);
+
+    if (!days) return null;
+
+    const today = new Date();
+    today.setDate(today.getDate() + days);
+
+    // Format date as: "Friday, September 6, 2025"
+    return today.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
-  const deleteCart = (item) => {
-    dispatch(deleteFromCart(item));
+  const expectedDate = calculateExpectedDate(product.delivery);
+
+  const handleAddToCart = () => {
+    dispatch(addTocart(product));
+    setMessage("✅ Item added to cart!");
+    setTimeout(() => setMessage(""), 2500);
+  };
+
+  const handleBuyNow = () => {
+    setMessage(
+      `🚚 Your product will be delivered in ${product.delivery}${
+        expectedDate ? ` (by ${expectedDate})` : ""
+      }`
+    );
+    setTimeout(() => setMessage(""), 10000);
   };
 
   return (
-    <div className="container mt-5">
-      <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>
-        ← Back
+    <div className="product-details-page">
+      {/* 🔙 Back button */}
+      <button className="back-btn" onClick={() => navigate(-1)}>
+        ⬅ Back
       </button>
 
-      <div className="row">
-        <div className="col-md-6">
-          <img src={product.imgage} alt={product.title} className="img-fluid" />
+      <div className="product-details-container">
+        {/* Left side image */}
+        <div className="product-image">
+          <img src={product.img || product.imgage} alt={product.name} />
         </div>
 
-        <div className="col-md-6">
-          <h2>{product.title}</h2>
-          <p>{product.description}</p>
-          <p>
-            <del>Rs.{product.initial_price}</del>{" "}
-            <strong>Rs.{product.price}</strong>
+        {/* Right side details */}
+        <div className="product-info">
+          <h3 className="product-name">{product.name}</h3>
+          <p className="product-price">€{product.price}</p>
+
+          {/* Delivery Info */}
+          <p className="delivery-info">
+            Estimated Delivery: {product.delivery}
+            {expectedDate && <span> (by {expectedDate})</span>}
           </p>
 
-          {/* Add/Remove Cart */}
-          {cartitems.find((item) => item.id === product.id) ? (
-            <button
-              className="btn btn-danger me-2"
-              onClick={() => deleteCart(product)}
-            >
-              Remove from Cart
-            </button>
-          ) : (
-            <button
-              className="btn btn-primary me-2"
-              onClick={() => addCart(product)}
-            >
+          <p className="product-description">{product.description}</p>
+
+          {/* Buttons side by side */}
+          <div className="buttons">
+            <button className="add-btn" onClick={handleAddToCart}>
               Add to Cart
             </button>
-          )}
+            <button className="buy-btn" onClick={handleBuyNow}>
+              Buy Now
+            </button>
+          </div>
 
-          {/* Buy Now */}
-          <button
-            className="btn btn-success"
-            onClick={() => setShowDelivery(true)}
-          >
-            Buy Now
-          </button>
+          {/* Success / Info message */}
+          {message && <p className="message-box">{message}</p>}
 
-          {showDelivery && (
-            <div className="alert alert-info mt-3">
-              ✅ This item will be delivered in <strong>3–5 business days</strong>.
-            </div>
-          )}
+          {/* Extras */}
+          <div className="extras">
+            <div>🚚 Free Worldwide Shipping*</div>
+            <div>🔄 Easy 60-Day Exchanges & Returns</div>
+            <div>📞 24/7 Customer Support</div>
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default ProductDetails;

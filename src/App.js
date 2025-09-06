@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import Cartpage from './pages/Cartpage';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import  SearchResults  from './pages/SearchResults';
+import ProductDetails from "./pages/ProductDetails";
 
 
 
@@ -36,6 +37,7 @@ function App() {
 <Route path='/forgetpassword' element={<ForgetPassword/>}/>
 <Route path='/profile' element={<Profile/>}/>
 <Route path='/cart' element={<Cartpage/>}/>
+<Route path="/product/:id" element={<ProductDetails />} />
 
       </Routes>
    
