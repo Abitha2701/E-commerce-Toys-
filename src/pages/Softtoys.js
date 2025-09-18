@@ -2,6 +2,8 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Softtoys.css';
+
+// ✅ Proper image imports
 import main from '../images/doll.jpg';
 import card1 from '../images/teddy.webp';
 import card2 from '../images/unicorn.webp';
@@ -27,6 +29,7 @@ import card21 from '../images/img12.webp';
 import card22 from '../images/img13.webp';
 import card23 from '../images/img14.webp';
 import card24 from '../images/img15.webp';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { addTocart, deleteFromCart } from '../redux/Cartslice';
 import { useNavigate } from 'react-router-dom';

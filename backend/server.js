@@ -6,7 +6,12 @@ const port = 6005;
 const bcrypt = require("bcryptjs");
 const Stripe = require("stripe");
 const stripe = new Stripe("sk_test_51S0iteCkxII7b1vsRONIfkZkxIFiPih5GV5V7R9zQd9rQ3jkwT3NkSpYmYF0p4PCEVmGblUxmUP8n6Z9AdUpVpkt00BAVi4e7F"); // 🔑 your secret key
+const Razorpay = require("razorpay");
 
+const razorpay = new Razorpay({
+  key_id: "rzp_test_RIxcFGVUeZMOtv",     // ✅ your Razorpay Test Key ID
+  key_secret: "8O18HiVok7rlBYRfefrYYiW8" // ✅ your Razorpay Test Key Secret
+});
 
 
 app.use(cors());
@@ -160,3 +165,20 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
+app.post("/create-razorpay-order", async (req, res) => {
+  try {
+    const { amount } = req.body; // amount in INR
+
+    const options = {
+      amount: amount * 100, // amount in paise (so 100 INR = 10000)
+      currency: "INR",
+      receipt: "receipt#1"
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (err) {
+    console.error("Razorpay error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});

@@ -16,15 +16,12 @@ function ProductDetails() {
   const calculateExpectedDate = (delivery) => {
     if (!delivery) return null;
 
-    // Extract number from delivery string (e.g., "5 days")
     const days = parseInt(delivery.match(/\d+/)?.[0] || 0, 10);
-
     if (!days) return null;
 
     const today = new Date();
     today.setDate(today.getDate() + days);
 
-    // Format date as: "Friday, September 6, 2025"
     return today.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -42,12 +39,46 @@ function ProductDetails() {
   };
 
   const handleBuyNow = () => {
+    // Step 1: Show message
     setMessage(
       `🚚 Your product will be delivered in ${product.delivery}${
         expectedDate ? ` (by ${expectedDate})` : ""
       }`
     );
-    setTimeout(() => setMessage(""), 10000);
+
+    // Step 2: After 3 seconds, open Razorpay popup
+    setTimeout(() => {
+      setMessage(""); // clear message
+
+      const options = {
+        key: "rzp_test_RIxcFGVUeZMOtv", // ✅ Replace with your Razorpay Test Key ID
+        amount: product.price * 100, // Amount in paise
+        currency: "INR",
+        name: "My Soft Toys Store",
+        description: product.name,
+        image: product.img || product.imgage,
+        handler: function (response) {
+          alert(
+            "✅ Payment Successful! Payment ID: " + response.razorpay_payment_id
+          );
+          navigate("/"); // Redirect after success
+        },
+        prefill: {
+          name: "Test User",
+          email: "test@example.com",
+          contact: "9999999999",
+        },
+        notes: {
+          product_id: product.id,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    }, 3000); // 3 seconds delay
   };
 
   return (

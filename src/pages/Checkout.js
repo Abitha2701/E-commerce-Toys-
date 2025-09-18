@@ -28,7 +28,7 @@ function Checkout() {
 
   // Validate form
   const validateForm = () => {
-    const { fullName, phone, address, city, pincode } = formData;
+    const { fullName, phone, address, city, pincode} = formData;
     if (!fullName || !phone || !address || !city || !pincode) return false;
     if (!/^\d{10}$/.test(phone)) return false;
     if (!/^\d{6}$/.test(pincode)) return false;
@@ -36,24 +36,63 @@ function Checkout() {
   };
 
   // Handle order placement
-  const handlePlaceOrder = () => {
-    if (!validateForm()) {
-      setMessage("⚠️ Please fill all fields correctly!");
-      return;
-    }
+const handlePlaceOrder = async () => {
+  if (!validateForm()) {
+    setMessage("⚠️ Please fill all fields correctly!");
+    return;
+  }
 
-    if (formData.payment === "Razorpay") {
-      setMessage("💳 Redirecting to Razorpay...");
-      // 👉 Integrate Razorpay SDK here
-    } else {
-      setMessage("✅ Order placed successfully with Cash on Delivery!");
-    }
+  if (formData.payment === "Razorpay") {
+    setMessage("💳 Redirecting to Razorpay...");
 
-    setTimeout(() => {
-      setMessage("");
-      navigate("/"); // Redirect to homepage or order summary
-    }, 3000);
-  };
+    // ✅ Step 1: Create order from backend
+    const res = await fetch("http://localhost:6005/create-razorpay-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total }),
+    });
+
+    const order = await res.json();
+
+    // ✅ Step 2: Load Razorpay SDK
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => {
+      const options = {
+        key: "rzp_test_RIxcFGVUeZMOtv", // ✅ Test Key ID
+        amount: order.amount,
+        currency: order.currency,
+        name: "My Store",
+        description: "Test Transaction",
+        order_id: order.id,
+        handler: function (response) {
+          alert("Payment Successful ✅");
+          console.log("Payment details:", response);
+          navigate("/success");
+        },
+        prefill: {
+          name: formData.fullName,
+          email: "test@example.com",
+          contact: formData.phone,
+        },
+        notes: {
+          address: formData.address,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    };
+    document.body.appendChild(script);
+  } else {
+    setMessage("✅ Order placed successfully with Cash on Delivery!");
+    setTimeout(() => navigate("/success"), 3000);
+  }
+};
+
 
   return (
     <div className="checkout-page">
@@ -64,7 +103,7 @@ function Checkout() {
       <h2 className="checkout-title">Checkout</h2>
 
       <div className="checkout-container">
-        {/* Shipping Address */}
+        {/* Shipping Address*/}
         <div className="checkout-section">
           <h3>Shipping Address</h3>
           <input
