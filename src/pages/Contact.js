@@ -1,11 +1,13 @@
 import React from 'react'
 import './Contact.css'
+import BackButton from '../components/BackButton'
 const Contact = () => {
   return (
     <div>
       
 
       <div className="contact-container">
+        <BackButton className="page-back" />
         <h2>Contact Us</h2>
         <p>Have a question or want to say hello? We'd love to hear from you!</p>
 

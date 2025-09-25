@@ -17,6 +17,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import  SearchResults  from './pages/SearchResults';
 import ProductDetails from "./pages/ProductDetails";
 import Checkout from './pages/Checkout';
+import Wishlist from './pages/Wishlist';
 
 
 
@@ -40,6 +41,7 @@ function App() {
 <Route path='/cart' element={<Cartpage/>}/>
 <Route path="/product/:id" element={<ProductDetails />} />
 <Route path="/checkout" element={<Checkout />} />
+<Route path="/wishlist" element={<Wishlist />} />
 
       </Routes>
    

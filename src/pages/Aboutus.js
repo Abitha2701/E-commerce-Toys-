@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import about from '../images/toyshop.jpg'
 import { Link } from 'react-router-dom'
+import BackButton from '../components/BackButton'
 
 
 
@@ -13,6 +14,10 @@ const Aboutus = () => {
 
         <div className="about-container">
          <Header/>
+
+      <div className="container px-3 py-2">
+        <BackButton className="page-back" />
+      </div>
 
       <div className="about-content">
         <img src={about} alt="Toy Shop" className="about-image" />

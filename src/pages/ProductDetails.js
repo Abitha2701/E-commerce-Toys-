@@ -3,12 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addTocart } from "../redux/Cartslice";
 import "./ProductDetails.css";
+import BackButton from "../components/BackButton";
+import { useSelector } from "react-redux";
+import { toggleWishlist } from "../redux/WishlistSlice";
 
 function ProductDetails() {
   const location = useLocation();
   const product = location.state;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const wishlistItems = useSelector((s)=> s.wishlist.items);
 
   const [message, setMessage] = useState("");
 
@@ -84,9 +88,7 @@ function ProductDetails() {
   return (
     <div className="product-details-page">
       {/* 🔙 Back button */}
-      <button className="back-btn" onClick={() => navigate(-1)}>
-        ⬅ Back
-      </button>
+      <BackButton className="page-back" />
 
       <div className="product-details-container">
         {/* Left side image */}
@@ -96,6 +98,13 @@ function ProductDetails() {
 
         {/* Right side details */}
         <div className="product-info">
+          <button
+            className="pd-wishlist-heart"
+            title="Toggle wishlist"
+            onClick={()=> dispatch(toggleWishlist(product))}
+          >
+            <i className={"fa-heart " + (wishlistItems.some(i=>i.id===product.id)?"fas":"far")} aria-hidden="true"></i>
+          </button>
           <h3 className="product-name">{product.name}</h3>
           <p className="product-price">€{product.price}</p>
 

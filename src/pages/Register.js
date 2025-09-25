@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../components/BackButton';
 
 const Register = () => {
     
@@ -55,6 +56,7 @@ try{
     <div className='register'>
 
       <div className="register-container">
+        <BackButton className="page-back" />
         <h2>Register Now</h2>
 
         <form className="register-form" onSubmit={handleSubmit}>

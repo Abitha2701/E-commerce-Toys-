@@ -1,6 +1,7 @@
 import './Login.css';
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import BackButton from '../components/BackButton';
 const Login = () => {
   const [formData, setFormData] = useState({ mail: "", password: "" });
   const [message, setMessage] = useState("");
@@ -42,6 +43,7 @@ const Login = () => {
   return (
     <div className='login'>
     <div className="login-container">
+      <BackButton className="page-back" />
       <h2>Already a User? Login</h2>
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">

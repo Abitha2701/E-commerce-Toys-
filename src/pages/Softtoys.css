@@ -53,6 +53,7 @@ margin-bottom: 2rem;
   border-radius: 10px;
   border: 1px solid #eee;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative; /* for wishlist heart */
 }
 
 .card-body {
@@ -62,6 +63,37 @@ margin-bottom: 2rem;
   flex-grow: 1;
 }
 
+/* Make card images full and fit */
+.card .card-img-top {
+  width: 100%;
+  height: 240px !important;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Wishlist heart */
+.wishlist-heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.wishlist-heart:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+.wishlist-heart .fa-heart.far { color: #e91e63; opacity: 0.7; }
+.wishlist-heart .fa-heart.fas { color: #e91e63; }
+
 .card-title {
   min-height: 2.5rem; /* ensures titles don't shift height */
 }
@@ -70,6 +102,10 @@ margin-bottom: 2rem;
   flex-grow: 1; /* takes up available space to push button down */
   font-size: 14px;
   color: #444;
+}
+
+@media (max-width: 576px) {
+  .card .card-img-top { height: 200px !important; }
 }
 
 .money {

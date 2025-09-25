@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Checkout.css";
+import BackButton from "../components/BackButton";
 
 function Checkout() {
   const navigate = useNavigate();
@@ -96,9 +97,7 @@ const handlePlaceOrder = async () => {
 
   return (
     <div className="checkout-page">
-      <button className="back-btn" onClick={() => navigate(-1)}>
-        ⬅ Back
-      </button>
+      <BackButton className="page-back" />
 
       <h2 className="checkout-title">Checkout</h2>
 

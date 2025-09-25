@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { deleteFromCart, updateQuantity } from '../redux/Cartslice';
 import { useNavigate } from 'react-router-dom';
 import './Cartpage.css';
+import BackButton from '../components/BackButton';
 
 const CartPage = () => {
   const cartitems = useSelector((state) => state.cart.cartitems);
@@ -47,6 +48,7 @@ const CartPage = () => {
 
   return (
     <div className="cart-container">
+      <BackButton className="page-back" />
       <h2 className="cart-title">Your Cart</h2>
 
       {cartitems.length === 0 ? (

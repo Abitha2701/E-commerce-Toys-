@@ -2,6 +2,9 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Softtoys.css';
+import BackButton from '../components/BackButton';
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleWishlist } from '../redux/WishlistSlice';
 
 // ✅ Proper image imports
 import main from '../images/doll.jpg';
@@ -30,12 +33,12 @@ import card22 from '../images/img13.webp';
 import card23 from '../images/img14.webp';
 import card24 from '../images/img15.webp';
 
-import { useSelector, useDispatch } from 'react-redux';
 import { addTocart, deleteFromCart } from '../redux/Cartslice';
 import { useNavigate } from 'react-router-dom';
 
 const Softtoys = () => {
   const dispatch = useDispatch();
+  const wishlistItems = useSelector((s)=> s.wishlist.items);
   const navigate = useNavigate();
   const cartitems = useSelector((state) => state.cart.cartitems);
 
@@ -395,6 +398,9 @@ const Softtoys = () => {
   return (
     <div>
       <Header />
+      <div className="container px-3 py-2">
+        <BackButton className="page-back" />
+      </div>
       <div className="doll-section">
         <div className="doll-text">
           <h3>Adorable Dolls for Every Child</h3>
@@ -411,13 +417,19 @@ const Softtoys = () => {
 
       <div className="cards">
         {menu.map((item) => (
-          <div className="card col-3" key={item.id} style={{ width: "18rem" }}>
+          <div className="card col-3" key={item.id}>
             <img
               src={item.imgage}
               className="card-img-top"
               alt={item.title}
-              style={{ height: "200px", objectFit: "cover" }}
             />
+            <button
+              className="wishlist-heart"
+              title="Toggle wishlist"
+              onClick={()=> dispatch(toggleWishlist({ ...item, name: item.title }))}
+            >
+              <i className={"fa-heart " + (wishlistItems.some(i=>i.id===item.id)?"fas":"far")} aria-hidden="true"></i>
+            </button>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
               <p className="card-text">

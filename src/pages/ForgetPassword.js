@@ -2,6 +2,7 @@ import React from 'react'
 import {useState} from "react"
 import { useNavigate} from 'react-router-dom'
 import './ForgetPassword.css'
+import BackButton from '../components/BackButton'
 const ForgetPassword =() => {
   const [formData, setFormData] = useState({ mail: "", newPassword: "" });
   const [message, setMessage] = useState("");
@@ -38,6 +39,7 @@ const ForgetPassword =() => {
   return (
     <div className='login'>
     <div className="login-container">
+      <BackButton className="page-back" />
       <h2>Password reset</h2>
 
       <form className="login-form" onSubmit={handleSubmit} >

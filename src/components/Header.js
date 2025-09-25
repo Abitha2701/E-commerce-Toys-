@@ -211,7 +211,7 @@ const Header = () => {
         <div className="details">
           <Link to="/about">About Us</Link>
           <Link to="/contact">Contact Us</Link>
-          <Link to="#" className="nav-link">
+          <Link to="/wishlist" className="nav-link">
             <i className="fa fa-heart"></i> Wishlist
           </Link>
           <Link to="/cart">Cart</Link>

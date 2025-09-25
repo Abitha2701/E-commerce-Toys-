@@ -49,10 +49,39 @@ margin-bottom: 2rem;
 
 text-align: center;
 margin-bottom: 2rem;
+ position: relative; /* for wishlist heart */
 }
 .card img{
-  height:17rem;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
+@media (max-width: 576px) {
+  .card img { height: 200px; }
+}
+/* Wishlist heart */
+.wishlist-heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.wishlist-heart:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+.wishlist-heart .fa-heart.far { color: #e91e63; opacity: 0.7; }
+.wishlist-heart .fa-heart.fas { color: #e91e63; }
 .card .buy{
   border: 1px solid #e91e63;
   padding: 7px 14px;
