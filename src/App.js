@@ -18,6 +18,8 @@ import  SearchResults  from './pages/SearchResults';
 import ProductDetails from "./pages/ProductDetails";
 import Checkout from './pages/Checkout';
 import Wishlist from './pages/Wishlist';
+import OrderSummary from './pages/OrderSummary';
+import Orders from './pages/Orders';
 
 
 
@@ -33,21 +35,21 @@ function App() {
 <Route path='/contact' element={<Contact/>}/>
 <Route path='/about' element={<Aboutus/>}/>
 <Route path='/softtoys' element={<Softtoys/>}/>
-<Route path='/lego' element={<Lego/>}/>
 <Route path='/register' element={<Register/>}/>
 <Route path='/login' element={<Login/>}/>
 <Route path='/forgetpassword' element={<ForgetPassword/>}/>
 <Route path='/profile' element={<Profile/>}/>
 <Route path='/cart' element={<Cartpage/>}/>
-<Route path="/product/:id" element={<ProductDetails />} />
-<Route path="/checkout" element={<Checkout />} />
-<Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/order/:orderId" element={<OrderSummary />} />
 
       </Routes>
    
       </BrowserRouter>
-     
-     </div>
+    </div>
   );
 }
 

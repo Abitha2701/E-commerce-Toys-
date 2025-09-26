@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../redux/Cartslice";
 import "./Checkout.css";
 import BackButton from "../components/BackButton";
 
@@ -7,6 +9,7 @@ function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartitems = [], total = 0 } = location.state || {};
+  const dispatch = useDispatch();
 
   // Form states
   const [formData, setFormData] = useState({
@@ -20,6 +23,35 @@ function Checkout() {
   });
 
   const [message, setMessage] = useState("");
+
+  // Helper to create order on backend and navigate to summary
+  const createOrderAndGo = async (paymentMethod, status = "Pending") => {
+    try {
+      const mail = localStorage.getItem("mail");
+      const payload = {
+        mail,
+        customerName: formData.fullName,
+        shippingAddress: `${formData.address}\n${formData.city} - ${formData.pincode}\n(${formData.addressType})`,
+        items: cartitems,
+        totalAmount: total,
+        paymentMethod,
+        status,
+      };
+      const res = await fetch("http://localhost:6005/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Failed to create order");
+      dispatch(clearCart());
+      navigate(`/order/${data.orderId}`, { state: { order: data.order } });
+    } catch (e) {
+      console.error("Order creation error:", e);
+      setMessage("⚠️ Order placed, but failed to save details. Please check 'Your Orders'.");
+      navigate("/orders");
+    }
+  };
 
   // Handle input change
   const handleChange = (e) => {
@@ -69,7 +101,7 @@ const handlePlaceOrder = async () => {
         handler: function (response) {
           alert("Payment Successful ✅");
           console.log("Payment details:", response);
-          navigate("/success");
+          createOrderAndGo("Razorpay", "Pending");
         },
         prefill: {
           name: formData.fullName,
@@ -90,7 +122,7 @@ const handlePlaceOrder = async () => {
     document.body.appendChild(script);
   } else {
     setMessage("✅ Order placed successfully with Cash on Delivery!");
-    setTimeout(() => navigate("/success"), 3000);
+    await createOrderAndGo("COD", "Pending");
   }
 };
 

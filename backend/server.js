@@ -37,12 +37,14 @@ const client = new MongoClient(uri, {
   }
 });
 let userCollection;
+let ordersCollection;
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const db=client.db("test");
      userCollection=db.collection("menu");
+     ordersCollection = db.collection("orders");
 
     app.post("/upload",async(req,res)=>{
         try{
@@ -162,6 +164,83 @@ app.post("/create-checkout-session", async (req, res) => {
   } catch (err) {
     console.error("Stripe error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Orders API
+// Create a new order
+app.post("/orders", async (req, res) => {
+  try {
+    const {
+      mail,
+      customerName,
+      shippingAddress,
+      items,
+      totalAmount,
+      paymentMethod,
+      status = "Pending",
+      notes = "",
+    } = req.body;
+
+    if (!mail || !customerName || !shippingAddress || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: "Missing required order fields" });
+    }
+
+    const orderDoc = {
+      mail,
+      customerName,
+      shippingAddress,
+      items: items.map(i => ({
+        id: i.id,
+        name: i.name,
+        quantity: Number(i.quantity) || 1,
+        price: Number(i.price) || 0,
+        img: i.img || i.imgage || null,
+      })),
+      totalAmount: Number(totalAmount) || 0,
+      paymentMethod: paymentMethod || "",
+      status,
+      createdAt: new Date(),
+      notes,
+    };
+
+    const result = await ordersCollection.insertOne(orderDoc);
+    return res.status(201).json({ success: true, orderId: result.insertedId, order: { _id: result.insertedId, ...orderDoc } });
+  } catch (err) {
+    console.error("Create order error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Get orders for a user by mail
+app.get("/orders", async (req, res) => {
+  try {
+    const { mail } = req.query;
+    if (!mail) return res.status(400).json({ success: false, message: "mail is required" });
+    const orders = await ordersCollection.find({ mail }).sort({ createdAt: -1 }).toArray();
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error("List orders error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Get single order by id
+app.get("/orders/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    let _id;
+    try {
+      _id = new ObjectId(id);
+    } catch (e) {
+      return res.status(400).json({ success: false, message: "Invalid order id" });
+    }
+    const order = await ordersCollection.findOne({ _id });
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+    res.json({ success: true, order });
+  } catch (err) {
+    console.error("Get order error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 

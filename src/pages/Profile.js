@@ -117,6 +117,10 @@ const Profile = () => {
                 <i className="fa-solid fa-shop" aria-hidden="true"></i>
                 Continue Shopping
               </Link>
+              <Link to="/orders" className="btn secondary">
+                <i className="fa-solid fa-box" aria-hidden="true"></i>
+                Your Orders
+              </Link>
               <button className="btn primary logout-btn" onClick={handleLogout}>
                 <i className="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
                 Logout
