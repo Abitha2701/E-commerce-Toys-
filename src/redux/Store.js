@@ -1,7 +1,8 @@
-import ProductSlice from './ProductSlice'; 
+import ProductSlice from './ProductSlice';
 import CartSlice from './Cartslice';
 import { configureStore } from '@reduxjs/toolkit';
 import WishlistSlice from './WishlistSlice';
+import AuthSlice from './AuthSlice';
 
 
 export const store = configureStore({
@@ -9,5 +10,6 @@ export const store = configureStore({
     product: ProductSlice,
     cart: CartSlice,
     wishlist: WishlistSlice,
+    auth: AuthSlice,
   },
 });

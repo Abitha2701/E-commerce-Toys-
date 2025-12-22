@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import BackButton from '../components/BackButton';
 
 const Register = () => {
-    
+
   const [formData, setFormData] = useState({
     name: "",
     mail: "",
@@ -14,6 +15,21 @@ const Register = () => {
 
     const [message, setMessage] = useState("");
   const Navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user) {
+      setMessage("You are already logged in. Redirecting to profile...");
+      setTimeout(() => {
+        if (user._id === 'admin') {
+          Navigate('/admin');
+        } else {
+          Navigate('/profile');
+        }
+      }, 2000);
+    }
+  }, [user, Navigate]);
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -35,13 +51,25 @@ try{
     const result=await response.json();
 
     if(response.ok){
-        setMessage("Registered Successfully!");
-       
+        setMessage("Registration successful! Redirecting to login...");
+
         setFormData({name:"",mail:"",number:"",password:""});
-        Navigate("/login")
+
+        // Check if registering as admin
+        if (formData.mail === 'admin@admin.com') {
+            alert('Admin account created! You can now login with admin@admin.com');
+        }
+
+        setTimeout(() => {
+          Navigate("/login");
+        }, 2000);
     }
     else{
-        setMessage("Registration Failed!");
+        if (result.message === "User already exist") {
+          setMessage("User already exists. Please login instead.");
+        } else {
+          setMessage("Registration Failed!");
+        }
     }
 }
     catch(error){
@@ -50,7 +78,7 @@ try{
     }
 }
 
-  
+
 
   return (
     <div className='register'>
@@ -66,6 +94,7 @@ try{
               type="text"
               placeholder="Enter your Username"
               id="name"
+              value={formData.name}
               onChange={handleChange}
               required
             />
@@ -77,6 +106,7 @@ try{
               type="email"
               placeholder="Enter your email"
               id="mail"
+              value={formData.mail}
               onChange={handleChange}
               required
             />
@@ -88,6 +118,7 @@ try{
               type="text"
               placeholder="Enter mobile number"
               id="number"
+              value={formData.number}
               maxLength="10"
               onChange={handleChange}
               required
@@ -100,10 +131,13 @@ try{
               type="password"
               placeholder="Enter password"
               id="password"
+              value={formData.password}
               onChange={handleChange}
               required
             />
           </div>
+
+          {message && <p className={`message ${message.includes('Successfully') ? 'success' : 'error'}`}>{message}</p>}
 
           <button type="submit">Register</button>
         </form>

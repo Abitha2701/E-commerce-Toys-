@@ -3,16 +3,12 @@ import './Home.css';
 import img1 from '../images/toy1.avif';
 import img2 from '../images/toy2.avif';
 import img3 from '../images/toy3.avif';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import legoimg from '../images/lego2.webp';
 import dollHero from '../images/doll.jpg';
 
 const Home = () => {
   return (
-
     <div>
-     <Header/>
       <div id="carouselExampleAutoplaying" className="carousel slide home-hero" data-bs-ride="carousel">
         <div className="carousel-inner">
           <div className="carousel-item active">
@@ -40,7 +36,7 @@ const Home = () => {
           <p>Discover soft toys, LEGO sets, and more curated for joyful play and learning.</p>
           <div className="hero-cta">
             <a href="#featured" className="btn btn-primary">Shop Featured</a>
-            <a href="/softtoys" className="btn btn-outline-light">Explore Soft Toys</a>
+            <a href="/softtoys" className="btn btn-">Explore Soft Toys</a>
           </div>
         </div>
       </div>
@@ -111,19 +107,19 @@ const Home = () => {
         <div className="row g-3">
           <div className="col-md-4">
             <div className="t-card">
-              <p>“My kid loves the soft toys! Super soft and safe.”</p>
+              <p>"My kid loves the soft toys! Super soft and safe."</p>
               <span>— Asha, Pune</span>
             </div>
           </div>
           <div className="col-md-4">
             <div className="t-card">
-              <p>“Great LEGO selection. Fast delivery!”</p>
+              <p>"Great LEGO selection. Fast delivery!"</p>
               <span>— Rohan, Bengaluru</span>
             </div>
           </div>
           <div className="col-md-4">
             <div className="t-card">
-              <p>“Quality products and amazing support.”</p>
+              <p>"Quality products and amazing support."</p>
               <span>— Neha, Mumbai</span>
             </div>
           </div>
@@ -141,7 +137,6 @@ const Home = () => {
           </form>
         </div>
       </section>
-      <Footer/>
     </div>
   );
 };

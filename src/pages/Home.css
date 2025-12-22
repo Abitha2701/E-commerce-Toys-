@@ -104,14 +104,16 @@
 .hero-overlay h1 { 
   font-weight: 800; 
   text-shadow: 0 4px 20px rgba(0,0,0,0.35); 
-}
+  color:whitesmoke;}
 .hero-overlay p { 
   margin: 0.25rem 0 0.75rem; 
   text-shadow: 0 2px 10px rgba(0,0,0,0.35); 
+  color: black;
 }
 .hero-overlay .hero-cta { 
   display: flex; gap: 10px; 
   pointer-events: auto; /* allow buttons to be clickable */
+
 }
 
 /* Featured categories */

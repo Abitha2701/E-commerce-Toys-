@@ -46,7 +46,7 @@ const allProducts = [
   {
     id: 1,
     quantity: 1,
-    imgage: card1,
+    img: card1,
     name: "Brown Bear",
     description: "Large soft brown teddy bear perfect for hugging and bedtime comfort.",
     initial_price: 900,
@@ -56,7 +56,7 @@ const allProducts = [
   {
     id: 2,
     quantity: 1,
-    imgage: card2,
+    img: card2,
     name: "Unicorn",
     description: "Magical red unicorn soft toy with sparkling details for fantasy play",
     initial_price: 900,

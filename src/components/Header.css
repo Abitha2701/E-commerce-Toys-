@@ -71,6 +71,12 @@ input[type="search"]:focus {
   animation: fadeInRight 1s ease;
 }
 
+/* === CART ICON === */
+.cart-icon {
+  display: flex;
+  align-items: center;
+}
+
 .profile a {
   text-decoration: none;
   color: aliceblue;

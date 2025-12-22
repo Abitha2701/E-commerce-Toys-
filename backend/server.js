@@ -1,263 +1,159 @@
-const express = require("express");
-const cors = require("cors");
+// ========= IMPORTS =========
+import express from "express";
+import cors from "cors";
+import multer from "multer";
+import path from "path";
+import bcrypt from "bcryptjs";
+import Stripe from "stripe";
+import Razorpay from "razorpay";
+import dotenv from "dotenv";
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
+
+import voiceSearchRoutes from "./routes/voiceSearch.js";
+
+// ========= CONFIG =========
+dotenv.config();
 const app = express();
+const port = process.env.PORT || 6005;
 
-const port = 6005;
-const bcrypt = require("bcryptjs");
-const Stripe = require("stripe");
-const stripe = new Stripe("sk_test_51S0iteCkxII7b1vsRONIfkZkxIFiPih5GV5V7R9zQd9rQ3jkwT3NkSpYmYF0p4PCEVmGblUxmUP8n6Z9AdUpVpkt00BAVi4e7F"); // 🔑 your secret key
-const Razorpay = require("razorpay");
-
-const razorpay = new Razorpay({
-  key_id: "rzp_test_RIxcFGVUeZMOtv",     // ✅ your Razorpay Test Key ID
-  key_secret: "8O18HiVok7rlBYRfefrYYiW8" // ✅ your Razorpay Test Key Secret
-});
-
-
+// ========= MIDDLEWARE =========
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+app.use("/api/voice", voiceSearchRoutes);
 
-app.get('/', (req, res) => {
-    res.send("Hi");
+// ========= MULTER =========
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, unique + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage });
+
+// ========= PAYMENTS =========
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
-const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
-const uri = "mongodb+srv://abitha27012005:Abitha27@cluster0.mklctlg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
+// ========= MONGODB =========
+const client = new MongoClient(process.env.MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
-    deprecationErrors: true,
+    deprecationErrors: true
   }
 });
-let userCollection;
-let ordersCollection;
+
+let userCollection, ordersCollection, productsCollection;
+
 async function run() {
+  await client.connect();
+  const db = client.db("test");
+
+  userCollection = db.collection("menu");
+  ordersCollection = db.collection("orders");
+  productsCollection = db.collection("products");
+
+  console.log("✅ MongoDB connected");
+}
+run().catch(console.error);
+
+// ========= ROUTES =========
+app.get("/", (req, res) => res.send("Server running"));
+
+app.post("/upload", async (req, res) => {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    const db=client.db("test");
-     userCollection=db.collection("menu");
-     ordersCollection = db.collection("orders");
+    const { name, mail, number, password } = req.body;
+    if (!name || !mail || !number || !password)
+      return res.status(400).json({ message: "All fields required" });
 
-    app.post("/upload",async(req,res)=>{
-        try{
-            const {name,mail,number,password}=req.body;
-            console.log(name,mail,number,password,"inside upload")
-            if(!name || !mail || !number || !password){
-                return res.status(400).json({success:false,message:"all fields are required"});
-            }
-            const existingUser=await userCollection.findOne({mail});
-            if(existingUser){
-                return res.status(409).json({success:false,message:"User already exist"});
-        }
-        const hashedPassword=await bcrypt.hash(password,10);
+    const existingUser = await userCollection.findOne({ mail });
+    if (existingUser)
+      return res.status(409).json({ message: "User already exists" });
 
-        const result=await userCollection.insertOne({
-            name,
-            mail,
-            number,
-            password:hashedPassword
-        });
-        res.status(201).json({success:true,message:"User registere" ,userId:result.insertedId});
-    }
-   catch(error){
-    console.log("Error in /upload:",error);
-    res.status(500).json({success:false,message:"Servor error"});
-   }
-    });
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
-  }
-}
-run().catch(console.dir);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
- app.post("/login", async (req, res) => {
-        try {
-             
-          const { mail, password } = req.body;
-          if (!mail || !password) {
-            return res.status(400).json({ success: false, message: "Email and password required" });
-          }
+    const userDoc = { name, mail, number, password: hashedPassword };
+    const result = await userCollection.insertOne(userDoc);
 
-          const user = await userCollection.findOne({ mail });
-          if (!user) {
-            return res.status(401).json({ success: false, message: "Invalid email or password" });
-          }
-
-          const isMatch = await bcrypt.compare(password, user.password);
-          if (!isMatch) {
-            return res.status(401).json({ success: false, message: "Invalid email or password" });
-          }
-
-          res.status(200).json({ success: true, message: "Login successful", user: { name: user.name, mail: user.mail,_id:user._id } });
-
-        } catch (error) {
-          console.error("Error in /login:", error);
-          res.status(500).json({ success: false, message: "Server error" });
-        }
-      });
-app.put("/reset-password",async(req,res)=>{
-const {mail,newPassword}=req.body;
-
-if(!mail || !newPassword){
-  return res.status(400).json({message:"Email and new password required"});
-}
-  const hashedPassword=await bcrypt.hash(newPassword,10);
-
-  await userCollection.updateOne(
-    {mail},
-    {$set:{password: hashedPassword}}
-  );
-  res.json({message:"Password reset successful"});
-}
-)
-
-app.get("/profile/:mail", async (req, res) => {
-  const { mail } = req.params;
-console.log("Fetching profile for:", mail); 
-  try {
-    const user = await userCollection.findOne(
-      { mail },
-      { projection: { password: 0 } }
-    );
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, user });
-  } catch (error) {
-    console.error("Error in /user/:mail:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(201).json({ success: true, userId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 });
+
+app.post("/login", async (req, res) => {
+  try {
+    const { mail, password } = req.body;
+    const user = await userCollection.findOne({ mail });
+    if (!user) return res.status(401).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+
+    res.json({ success: true, user: { name: user.name, mail: user.mail } });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    const { items } = req.body;
-    console.log("Items from frontend:", items);
-
-    const lineItems = items.map(item => ({
-      price: item.priceId,   // ✅ use priceId directly
-      quantity: item.quantity,
-    }));
-
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: lineItems,
-      mode: "payment", // ✅ only works if price is one-time
+      line_items: req.body.items.map(i => ({
+        price: i.priceId,
+        quantity: i.quantity
+      })),
+      mode: "payment",
       success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/cancel",
+      cancel_url: "http://localhost:5173/cancel"
     });
 
     res.json({ id: session.id });
   } catch (err) {
-    console.error("Stripe error:", err);
     res.status(500).json({ error: err.message });
-  }
-});
-
-// Orders API
-// Create a new order
-app.post("/orders", async (req, res) => {
-  try {
-    const {
-      mail,
-      customerName,
-      shippingAddress,
-      items,
-      totalAmount,
-      paymentMethod,
-      status = "Pending",
-      notes = "",
-    } = req.body;
-
-    if (!mail || !customerName || !shippingAddress || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ success: false, message: "Missing required order fields" });
-    }
-
-    const orderDoc = {
-      mail,
-      customerName,
-      shippingAddress,
-      items: items.map(i => ({
-        id: i.id,
-        name: i.name,
-        quantity: Number(i.quantity) || 1,
-        price: Number(i.price) || 0,
-        img: i.img || i.imgage || null,
-      })),
-      totalAmount: Number(totalAmount) || 0,
-      paymentMethod: paymentMethod || "",
-      status,
-      createdAt: new Date(),
-      notes,
-    };
-
-    const result = await ordersCollection.insertOne(orderDoc);
-    return res.status(201).json({ success: true, orderId: result.insertedId, order: { _id: result.insertedId, ...orderDoc } });
-  } catch (err) {
-    console.error("Create order error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
-
-// Get orders for a user by mail
-app.get("/orders", async (req, res) => {
-  try {
-    const { mail } = req.query;
-    if (!mail) return res.status(400).json({ success: false, message: "mail is required" });
-    const orders = await ordersCollection.find({ mail }).sort({ createdAt: -1 }).toArray();
-    res.json({ success: true, orders });
-  } catch (err) {
-    console.error("List orders error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
-
-// Get single order by id
-app.get("/orders/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    let _id;
-    try {
-      _id = new ObjectId(id);
-    } catch (e) {
-      return res.status(400).json({ success: false, message: "Invalid order id" });
-    }
-    const order = await ordersCollection.findOne({ _id });
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-    res.json({ success: true, order });
-  } catch (err) {
-    console.error("Get order error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
 app.post("/create-razorpay-order", async (req, res) => {
   try {
-    const { amount } = req.body; // amount in INR
-
-    const options = {
-      amount: amount * 100, // amount in paise (so 100 INR = 10000)
+    const order = await razorpay.orders.create({
+      amount: req.body.amount * 100,
       currency: "INR",
       receipt: "receipt#1"
-    };
-
-    const order = await razorpay.orders.create(options);
+    });
     res.json(order);
   } catch (err) {
-    console.error("Razorpay error:", err);
     res.status(500).json({ error: err.message });
   }
+});
+
+app.post("/upload-product", upload.single("image"), async (req, res) => {
+  try {
+    const imageUrl = `http://localhost:${port}/uploads/${req.file.filename}`;
+
+    const productDoc = {
+      ...req.body,
+      price: Number(req.body.price),
+      img: imageUrl,
+      createdAt: new Date()
+    };
+
+    const result = await productsCollection.insertOne(productDoc);
+    res.status(201).json({ success: true, productId: result.insertedId });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// ========= START SERVER =========
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
 });

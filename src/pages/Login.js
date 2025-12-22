@@ -1,11 +1,29 @@
 import './Login.css';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/AuthSlice';
 import BackButton from '../components/BackButton';
+
 const Login = () => {
   const [formData, setFormData] = useState({ mail: "", password: "" });
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user) {
+      setMessage("You are already logged in. Redirecting to profile...");
+      setTimeout(() => {
+        if (user._id === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/profile');
+        }
+      }, 2000);
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -16,27 +34,19 @@ const Login = () => {
     e.preventDefault();
     setMessage("");
 
-    try {
-      const res = await fetch("http://localhost:6005/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+    const resultAction = await dispatch(loginUser(formData));
 
-      const result = await res.json();
-      if (res.ok) {
-     
-
-        console.log("Login user", result);
-       localStorage.setItem("mail", result.user.mail);
-
-        navigate("/profile");
-      } else {
-        setMessage(result.message);
-      }
-    } catch (error) {
-      console.error("Login error", error);
-      setMessage("Server error");
+    if (loginUser.fulfilled.match(resultAction)) {
+      setMessage("Logged in successfully! Redirecting...");
+      setTimeout(() => {
+        if (resultAction.payload._id === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/profile');
+        }
+      }, 2000);
+    } else {
+      setMessage(resultAction.payload || "Login failed");
     }
   };
 
@@ -70,9 +80,11 @@ const Login = () => {
           />
         </div>
 
-        {message && <p className="error-message">{message}</p>}
+        {(message || error) && <p className="error-message">{message || error}</p>}
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
         <div className='form-group'><Link to="/forgetpassword"> ForgetPassword???</Link></div>
 

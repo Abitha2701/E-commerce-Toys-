@@ -8,6 +8,7 @@ import BackButton from "../components/BackButton";
 import "./SearchResults.css";
 import { toggleWishlist } from "../redux/WishlistSlice";
 
+
 const SearchResults = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -48,8 +49,8 @@ const SearchResults = () => {
     <div className="sr-container container mt-4">
       {/* Back Button */}
       <BackButton className="page-back mb-3" />
+<h2 className="mb-3">Search Results for: "{searchTerm}"</h2>
 
-      <h2>Search Results for: "{searchTerm}"</h2>
 
       {filteredProducts.length > 0 ? (
         <div className="row">
