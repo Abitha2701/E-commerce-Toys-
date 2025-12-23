@@ -5,6 +5,7 @@ import img2 from '../images/toy2.avif';
 import img3 from '../images/toy3.avif';
 import legoimg from '../images/lego2.webp';
 import dollHero from '../images/doll.jpg';
+import AIAssistant from '../components/AIAssistant';
 
 const Home = () => {
   return (
@@ -136,8 +137,11 @@ const Home = () => {
             <button type="submit" className="btn btn-primary">Subscribe</button>
           </form>
         </div>
+        
       </section>
+        <AIAssistant />
     </div>
+    
   );
 };
 

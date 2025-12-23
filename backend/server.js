@@ -8,8 +8,10 @@ import Stripe from "stripe";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
-
+import aiRoutes from "./routes/ai.js";
 import voiceSearchRoutes from "./routes/voiceSearch.js";
+
+
 
 // ========= CONFIG =========
 dotenv.config();
@@ -20,6 +22,7 @@ const port = process.env.PORT || 6005;
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+app.use("/api/ai", aiRoutes);
 app.use("/api/voice", voiceSearchRoutes);
 
 // ========= MULTER =========
@@ -151,6 +154,7 @@ app.post("/upload-product", upload.single("image"), async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 // ========= START SERVER =========
